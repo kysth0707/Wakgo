@@ -27,7 +27,6 @@ package main
 
 import (
 	"fmt"
-	"html"
 	"io"
 	"net/http"
 	"time"
@@ -35,11 +34,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var goLinks = make(map[string]int)
+var goLinks = map[string]int{
+	"공지": 2244865,
+}
 
 func main() {
 	fmt.Println("Starting Server...")
-	goLinks["공지"] = 2244865
+
+	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
@@ -60,21 +62,23 @@ func getLinks(c *gin.Context) {
 
 func getGoLink(c *gin.Context) {
 	goTo := c.Param("goTo")
-	goTo = html.UnescapeString(goTo)
-	val, ok := goLinks[goTo]
-	if !ok {
-		c.HTML(http.StatusOK, "nodata.html", gin.H{
-			"goTo": goTo,
-		})
+	if goTo == "favicon.ico" {
 		return
 	}
 
-	fmt.Println(val)
+	val, ok := goLinks[goTo]
+	if !ok {
+		// c.HTML(http.StatusOK, "nodata.html", gin.H{
+		// 	"goTo": goTo,
+		// })
+		c.IndentedJSON(http.StatusOK, gin.H{"goTo": goTo, "status": false, "explain": "해당하는 링크가 없어요 ㅠㅠ"})
+		return
+	}
+
 	c.Redirect(
-		http.StatusMovedPermanently,
-		"https://cafe.naver.com/steamindiegame/"+string(val),
+		http.StatusOK,
+		fmt.Sprintf("https://cafe.naver.com/steamindiegame/%d", val),
 	)
-	// c.IndentedJSON(http.StatusOK, gin.H{"니가 날린 거": goTo, "안녕": val})
 }
 
 // ============ 코드 테스트 ============
@@ -84,6 +88,7 @@ func testCodes() {
 	testNum := 0
 
 	testIt("http://localhost:1987/links", "\"링크 모음임\"", &testNum)
+	testIt("http://localhost:1987/link", "\"링크 모음임\"", &testNum)
 }
 
 func testIt(url string, targetResponse string, testNumAddr *int) {
