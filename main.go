@@ -51,7 +51,7 @@ func main() {
 	router.GET("/:goTo", getGoLink)
 
 	go testCodes()
-	router.Run("localhost:1987")
+	router.Run(":1987")
 }
 
 // ============ 라우터로 넘어온 함수 ============
