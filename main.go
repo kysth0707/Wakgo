@@ -29,13 +29,16 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 var goLinks = map[string]int{
-	"공지": 2244865,
+	"공지":  2244865,
+	"도우미": 9600844,
 }
 
 func main() {
@@ -52,7 +55,39 @@ func main() {
 	router.GET("/:goTo", getGoLink)
 
 	go testCodes()
+	go autoSaveGoLinks()
 	router.Run(":1987")
+}
+
+// ============ goLinks DB 함수 ============
+func autoSaveGoLinks() {
+	// ======= 새 파일 생성 =======
+	now := time.Now()
+	formatedNow := now.Format("2006-01-02_15-04-05")
+	fileName := fmt.Sprintf("database\\%s.csv", formatedNow)
+	fmt.Println("Saving file at ", formatedNow, " / file : ", fileName)
+	// txt := ""
+	// for key, value := range goLinks {
+	// 	txt := txt + "\n" + fmt.Sprintf("%s, %d", repCommaEnter(key), value)
+	// }
+	// os.WriteFile(fileName, []byte(txt), 0644)
+}
+
+func loadGoLinks() {
+	// ======= 파일 읽기 =======
+	data, err := os.ReadFile("datas\\1.txt")
+	if err != nil {
+		return
+	}
+
+	fmt.Print(string(data))
+}
+
+// ============ , \n 제거 함수 ============
+func repCommaEnter(txt string) string {
+	nocomma := strings.ReplaceAll(txt, ",", "")
+	noenter := strings.ReplaceAll(nocomma, "\n", "")
+	return noenter
 }
 
 // ============ 라우터로 넘어온 함수 ============
