@@ -76,7 +76,7 @@ func getGoLink(c *gin.Context) {
 	}
 
 	c.Redirect(
-		http.StatusOK,
+		http.StatusPermanentRedirect,
 		fmt.Sprintf("https://cafe.naver.com/steamindiegame/%d", val),
 	)
 }
