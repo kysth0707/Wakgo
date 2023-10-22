@@ -46,6 +46,7 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
+	router.GET("/", mainPage)
 	router.GET("/link", getLinks)
 	router.GET("/links", getLinks)
 	router.GET("/:goTo", getGoLink)
@@ -55,6 +56,9 @@ func main() {
 }
 
 // ============ 라우터로 넘어온 함수 ============
+func mainPage(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, gin.H{"status": true, "explain": "메인페이지입니당"})
+}
 
 func getLinks(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, "링크 모음임")
